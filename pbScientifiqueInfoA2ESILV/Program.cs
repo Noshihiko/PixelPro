@@ -38,26 +38,26 @@ namespace PixelPro
             #endregion
 
             #region Test Contour
-            //string fichierEntree = "./Images/Lenna.bmp"
+            //string fichierEntree = "./Images/lena.bmp";
 
             //MyImage image = new MyImage(fichierEntree);
-            //image.Prewitt();
+            //image.Prewitt(true);
             //image.From_Image_To_File("./Images/Contour/LennaPrewitt.bmp");
 
             //image = new MyImage(fichierEntree);
-            //image.Roberts();
+            //image.Roberts(true);
             //image.From_Image_To_File("./Images/Contour/LennaRoberts.bmp");
 
             //image = new MyImage(fichierEntree);
-            //image.Sobel();
+            //image.Sobel(true);
             //image.From_Image_To_File("./Images/Contour/LennaSobel.bmp");
 
             //image = new MyImage(fichierEntree);
-            //image.Kirsch();
+            //image.Kirsch(true);
             //image.From_Image_To_File("./Images/Contour/LennaKirsch.bmp");
 
             //image = new MyImage(fichierEntree);
-            //image.MDIF();
+            //image.MDIF(true);
             //image.From_Image_To_File("./Images/Contour/LennaMDIF.bmp");
 
 
@@ -87,46 +87,46 @@ namespace PixelPro
             //fichierEntree = "./Images/lac.bmp";
 
             //image = new MyImage(fichierEntree);
-            //image.Prewitt();
+            //image.Prewitt(true);
             //image.From_Image_To_File("./Images/Contour/lacPrewitt.bmp");
 
             //image = new MyImage(fichierEntree);
-            //image.Roberts();
+            //image.Roberts(true);
             //image.From_Image_To_File("./Images/Contour/lacRoberts.bmp");
 
             //image = new MyImage(fichierEntree);
-            //image.Sobel();
+            //image.Sobel(true);
             //image.From_Image_To_File("./Images/Contour/lacSobel.bmp");
 
             //image = new MyImage(fichierEntree);
-            //image.Kirsch();
+            //image.Kirsch(true);
             //image.From_Image_To_File("./Images/Contour/lacKirsch.bmp");
 
             //image = new MyImage(fichierEntree);
-            //image.MDIF();
+            //image.MDIF(true);
             //image.From_Image_To_File("./Images/Contour/lacMDIF.bmp");
 
 
             //fichierEntree = "./Images/coco.bmp";
 
             //image = new MyImage(fichierEntree);
-            //image.Prewitt();
+            //image.Prewitt(true);
             //image.From_Image_To_File("./Images/Contour/cocoPrewitt.bmp");
 
             //image = new MyImage(fichierEntree);
-            //image.Roberts();
+            //image.Roberts(true);
             //image.From_Image_To_File("./Images/Contour/cocoRoberts.bmp");
 
             //image = new MyImage(fichierEntree);
-            //image.Sobel();
+            //image.Sobel(true);
             //image.From_Image_To_File("./Images/Contour/cocoSobel.bmp");
 
             //image = new MyImage(fichierEntree);
-            //image.Kirsch();
+            //image.Kirsch(true);
             //image.From_Image_To_File("./Images/Contour/cocoKirsch.bmp");
 
             //image = new MyImage(fichierEntree);
-            //image.MDIF();
+            //image.MDIF(true);
             //image.From_Image_To_File("./Images/Contour/cocoMDIF.bmp");
             #endregion
 
@@ -165,12 +165,11 @@ namespace PixelPro
             #endregion
 
             #region Test Flou
-
             //fichierEntree = "./Images/Test.bmp";
 
             //image = new MyImage(fichierEntree);
             //image.Blur();
-            //image.From_Image_To_File("./Images/Flou/TestBlur.bmp"); 
+            //image.From_Image_To_File("./Images/Flou/TestBlur.bmp");
 
             //image = new MyImage(fichierEntree);
             //image.BiggerBlur();
@@ -189,7 +188,7 @@ namespace PixelPro
 
             //image = new MyImage(fichierEntree);
             //image.Blur();
-            //image.From_Image_To_File("./Images/Flou/cocoBlur.bmp"); 
+            //image.From_Image_To_File("./Images/Flou/cocoBlur.bmp");
 
             //image = new MyImage(fichierEntree);
             //image.BiggerBlur();
@@ -208,7 +207,7 @@ namespace PixelPro
 
             //image = new MyImage(fichierEntree);
             //image.Blur();
-            //image.From_Image_To_File("./Images/Flou/lacBlur.bmp"); 
+            //image.From_Image_To_File("./Images/Flou/lacBlur.bmp");
 
             //image = new MyImage(fichierEntree);
             //image.BiggerBlur();
@@ -463,24 +462,28 @@ namespace PixelPro
                         {
                             case 1:
                                 Console.WriteLine("Vous avez choisi un léger floutement.");
+                           
                                 Console.WriteLine("\nProcessus en cours...");
                                 image.Blur();
                                 Console.WriteLine("\nProcessus terminé.\n");
                                 break;
                             case 2:
                                 Console.WriteLine("Vous avez choisi un floutement plus intense.");
+
                                 Console.WriteLine("\nProcessus en cours...");
                                 image.BiggerBlur();
                                 Console.WriteLine("\nProcessus terminé.\n");
                                 break;
                             case 3:
                                 Console.WriteLine("Vous avez choisi un floutement uniforme.");
+
                                 Console.WriteLine("\nProcessus en cours...");
                                 image.UniformBlur();
                                 Console.WriteLine("\nProcessus terminé.\n");
                                 break;
                             case 4:
                                 Console.WriteLine("Vous avez choisi un floutement gaussian.\n\n");
+
                                 Console.WriteLine("Veuillez sélectionner une taille pour la matrice gaussienne appliquée à l'image : ");
                                 int tailleMatrice = Verif_Int(Console.ReadLine());
                                 tailleMatrice = Verif_Intervalle(tailleMatrice, 1, int.MaxValue);
@@ -493,35 +496,35 @@ namespace PixelPro
                                 Console.WriteLine("Vous avez choisi le contour des bords : méthode Prewitt.");
 
                                 Console.WriteLine("\nProcessus en cours...");
-                                image.Prewitt();
+                                image.Prewitt(DemandeImageCouleur());
                                 Console.WriteLine("\nProcessus terminé.\n");
                                 break;
                             case 6:
                                 Console.WriteLine("Vous avez choisi le contour des bords : méthode Roberts.");
 
                                 Console.WriteLine("\nProcessus en cours...");
-                                image.Roberts();
+                                image.Roberts(DemandeImageCouleur());
                                 Console.WriteLine("\nProcessus terminé.\n");
                                 break;
                             case 7:
                                 Console.WriteLine("Vous avez choisi le contour des bords : méthode Sobel.");
 
                                 Console.WriteLine("\nProcessus en cours...");
-                                image.Sobel();
+                                image.Sobel(DemandeImageCouleur());
                                 Console.WriteLine("\nProcessus terminé.\n");
                                 break;
                             case 8:
                                 Console.WriteLine("Vous avez choisi le contour des bords : méthode Kirsch.");
 
                                 Console.WriteLine("\nProcessus en cours...");
-                                image.Kirsch();
+                                image.Kirsch(DemandeImageCouleur());
                                 Console.WriteLine("\nProcessus terminé.\n");
                                 break;
                             case 9:
                                 Console.WriteLine("Vous avez choisi le contour des bords : méthode MDIF.");
                                 
                                 Console.WriteLine("\nProcessus en cours...");
-                                image.MDIF();
+                                image.MDIF(DemandeImageCouleur());
                                 Console.WriteLine("\nProcessus terminé.\n");
                                 break;
                             case 10:
@@ -766,6 +769,18 @@ namespace PixelPro
                 n = Verif_Int(Console.ReadLine());
             }
             return n;
+        }
+
+        public static bool DemandeImageCouleur()
+        {
+            Console.WriteLine("Votre image est elle en couleur ? (\"oui\" ou \"non\")");
+            string B_W = Console.ReadLine().ToLower();
+            while (B_W != "oui" && B_W != "non")
+            {
+                Console.WriteLine("Saisir \"oui\" ou \"non\"");
+                B_W = Console.ReadLine().ToLower();
+            }
+            return B_W == "oui";
         }
     }
 }

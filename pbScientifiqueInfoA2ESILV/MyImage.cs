@@ -291,7 +291,7 @@ namespace PixelPro
                 }
                 this.largeur *= coeff;
                 this.hauteur *= coeff;
-                this.tailleFichier = (this.hauteur * this.largeur * this.bitsCouleur) / 8 + this.tailleOffset;
+                this.tailleFichier = (this.hauteur * this.largeur  * this.bitsCouleur) / 8 + this.tailleOffset;
                 this.image = newImage;
             }
         }
@@ -421,7 +421,15 @@ namespace PixelPro
                     newImage[y, x] = new Pixel(resultB, resultG, resultR);
                 }
             }
-            return newImage;  
+            Pixel[,] finalImage = new Pixel[this.hauteur - 4, this.largeur - 4];
+            for(int i = 0; i < finalImage.GetLength(0); i++)
+            {
+                for(int j = 0; j < finalImage.GetLength(1); j++)
+                {
+                    finalImage[i,j] = newImage[i + 2, j + 2];
+                }
+            }
+            return finalImage;  
         }
 
         #region Les différents filtres
@@ -433,11 +441,15 @@ namespace PixelPro
             double[,] filter ={
                 { 0.0, 0.2,  0.0 },
                 { 0.2, 0.2,  0.2 },
-                { 0.0, 0.2,  0.0 }};
+                { 0.0, 0.2,  0.0 }
+            };
 
             double factor = 1.0;
             double bias = 0.0;
             this.image = Convolution(filter,factor,bias);
+            this.hauteur = image.GetLength(0);
+            this.largeur = image.GetLength(1);
+            this.tailleFichier = (bitsCouleur * hauteur * largeur / 8) + tailleOffset;
         }
 
         /// <summary>
@@ -450,11 +462,15 @@ namespace PixelPro
                 { 0, 1, 1, 1, 0 },
                 { 1, 1, 1, 1, 1 },
                 { 0, 1, 1, 1, 0 },
-                { 0, 0, 1, 0, 0 } };
+                { 0, 0, 1, 0, 0 }
+            };
 
             double factor = 1.0 / 13.0;
             double bias = 0.0;
             this.image = Convolution(filter, factor, bias);
+            this.hauteur = image.GetLength(0);
+            this.largeur = image.GetLength(1);
+            this.tailleFichier = (bitsCouleur * hauteur * largeur / 8) + tailleOffset;
         }
 
         /// <summary>
@@ -465,11 +481,15 @@ namespace PixelPro
             double[,] filter ={
                 { 1.0, 1.0,  1.0 },
                 { 1.0, 1.0,  1.0 },
-                { 1.0, 1.0,  1.0 }};
+                { 1.0, 1.0,  1.0 }
+            };
 
             double factor = 1.0/9.0;
             double bias = 0.0; //si je mets un bias à -1000 ça fait des trucs très stylés
             this.image = Convolution(filter, factor, bias);
+            this.hauteur = image.GetLength(0);
+            this.largeur = image.GetLength(1);
+            this.tailleFichier = (bitsCouleur * hauteur * largeur / 8) + tailleOffset;
         }
 
         /// <summary>
@@ -493,6 +513,9 @@ namespace PixelPro
             double bias = 0.0;
 
             this.image = Convolution(filter, factor, bias);
+            this.hauteur = image.GetLength(0);
+            this.largeur = image.GetLength(1);
+            this.tailleFichier = (bitsCouleur * hauteur * largeur / 8) + tailleOffset;
         }
 
         /// <summary>
@@ -536,54 +559,76 @@ namespace PixelPro
         /// <summary>
         /// Applique l'effet de contour des bords de Prewitt à l'image
         /// </summary>
-        public void Prewitt()
+        /// <param name="couleur"> booléen permettant de déterminer s'il faut rajouter un filtre Noir et Blanc à l'image </param>
+        public void Prewitt(bool couleur = false)
         {
-            Black_White();
+            if (couleur)
+            {
+                Black_White();
+            }
             double[,] detectionVerticale ={
                 { -1.0,  0.0,  1.0 },
                 { -1.0,  0.0,  1.0 },
-                { -1.0,  0.0,  1.0 }};
+                { -1.0,  0.0,  1.0 }
+            };
 
             double[,] detectioHorizontale ={
                 { -1.0, -1.0, -1.0 },
                 {  0.0,  0.0,  0.0 },
-                {  1.0,  1.0,  1.0 }};
+                {  1.0,  1.0,  1.0 }
+            };
 
             double factor = 1.0 / 3.0;
             double bias = 0.0;
 
             Pixel[,] p1 = Convolution(detectionVerticale,factor,bias);
             Pixel[,] p2 = Convolution(detectioHorizontale, factor, bias);
-            for(int i = 0; i < p1.GetLength(0);i++)
+            this.hauteur = p1.GetLength(0);
+            this.largeur = p1.GetLength(1);
+            this.tailleFichier = (bitsCouleur * hauteur * largeur / 8) + tailleOffset;
+
+            this.image = p1;
+            for (int i = 0; i < p1.GetLength(0); i++)
             {
-                for(int j = 0; j < p1.GetLength(1);j++)
+                for (int j = 0; j < p1.GetLength(1); j++)
                 {
                     this.image[i, j] = Pixel.Add(p1[i, j], p2[i, j]);
                 }
             }
-        } //trop foncé, faut réussir à plus faire ressortir les contours... comment ???
+        }
 
         /// <summary>
         /// Applique l'effet de contour des bords de Roberts à l'image
         /// </summary>
-        public void Roberts()
+        /// <param name="couleur"> booléen permettant de déterminer s'il faut rajouter un filtre Noir et Blanc à l'image </param>
+        public void Roberts(bool couleur = false)
         {
-            Black_White();
+            if (couleur)
+            {
+                Black_White();
+            }
             double[,] detectionDiago1 ={
                 {  0.0,  0.0,  0.0 },
                 {  0.0,  0.0,  1.0 },
-                {  0.0, -1.0,  0.0 }};
+                {  0.0, -1.0,  0.0 }
+            };
 
             double[,] detectionDiago2 ={
                 {  0.0,  0.0,  0.0 },
                 {  0.0, -1.0,  0.0 },
-                {  0.0,  0.0,  1.0 }};
+                {  0.0,  0.0,  1.0 }
+            };
 
             double factor = 1.0 / 3.0;
             double bias = 0.0;
 
             Pixel[,] p1 = Convolution(detectionDiago1, factor, bias);
             Pixel[,] p2 = Convolution(detectionDiago2, factor, bias);
+            this.hauteur = p1.GetLength(0);
+            this.largeur = p1.GetLength(1);
+            this.tailleFichier = (bitsCouleur * hauteur * largeur / 8) + tailleOffset;
+
+            this.image = p1;
             for (int i = 0; i < p1.GetLength(0); i++)
             {
                 for (int j = 0; j < p1.GetLength(1); j++)
@@ -591,29 +636,40 @@ namespace PixelPro
                     this.image[i, j] = Pixel.Add(p1[i, j], p2[i, j]);
                 }
             }
-        } //trop foncé, faut réussir à plus faire ressortir les contours... comment ???
+        }
 
         /// <summary>
         /// Applique l'effet de contour des bords de Sobel à l'image
         /// </summary>
-        public void Sobel()
+        /// <param name="couleur"> booléen permettant de déterminer s'il faut rajouter un filtre Noir et Blanc à l'image </param>
+        public void Sobel(bool couleur = false)
         {
-            Black_White();
+            if (couleur)
+            {
+                Black_White();
+            }
             double[,] detectionHorizontale ={
                 { -1.0,  0.0,  1.0 },
                 { -1.0,  0.0,  2.0 },
-                { -1.0,  0.0,  1.0 }};
+                { -1.0,  0.0,  1.0 }
+            };
 
             double[,] detectionVerticale ={
                 { -1.0, -2.0, -1.0 },
                 {  0.0,  0.0,  0.0 },
-                {  1.0,  2.0,  1.0 }};
+                {  1.0,  2.0,  1.0 }
+            };
 
             double factor = 1.0 / 4.0;
             double bias = 0.0;
 
             Pixel[,] p1 = Convolution(detectionHorizontale, factor, bias);
             Pixel[,] p2 = Convolution(detectionVerticale, factor, bias);
+            this.hauteur = p1.GetLength(0);
+            this.largeur = p1.GetLength(1);
+            this.tailleFichier = (bitsCouleur * hauteur * largeur / 8) + tailleOffset;
+
+            this.image = p1;
             for (int i = 0; i < p1.GetLength(0); i++)
             {
                 for (int j = 0; j < p1.GetLength(1); j++)
@@ -621,30 +677,40 @@ namespace PixelPro
                     this.image[i, j] = Pixel.Add(p1[i, j], p2[i, j]);
                 }
             }
-        } //trop foncé, faut réussir à plus faire ressortir les contours... comment ???
+        }
 
         /// <summary>
         /// Applique  l'effet de contour des bords de Kirsch à l'image
         /// </summary>
-        public void Kirsch()
+        /// <param name="couleur"> booléen permettant de déterminer s'il faut rajouter un filtre Noir et Blanc à l'image </param>
+        public void Kirsch(bool couleur = false)
         {
-            Black_White();
-
+            if (couleur)
+            {
+                Black_White();
+            }
             double[,] detectionHorizontale ={
                 { -3.0, -3.0, -3.0 },
                 { -3.0,  0.0, -3.0 },
-                {  5.0,  5.0,  5.0 }};
+                {  5.0,  5.0,  5.0 }
+            };
 
             double[,] detectionVerticale ={
                 { -3.0, -3.0,  5.0 },
                 { -3.0,  0.0,  5.0 },
-                { -3.0, -3.0,  5.0 }};
+                { -3.0, -3.0,  5.0 }
+            };
 
             double factor = 1.0 / 15.0;
             double bias = 0.0;
 
             Pixel[,] p1 = Convolution(detectionHorizontale, factor, bias);
             Pixel[,] p2 = Convolution(detectionVerticale, factor, bias);
+            this.hauteur = p1.GetLength(0);
+            this.largeur = p1.GetLength(1);
+            this.tailleFichier = (bitsCouleur * hauteur * largeur / 8) + tailleOffset;
+
+            this.image = p1;
             for (int i = 0; i < p1.GetLength(0); i++)
             {
                 for (int j = 0; j < p1.GetLength(1); j++)
@@ -652,33 +718,44 @@ namespace PixelPro
                     this.image[i, j] = Pixel.Add(p1[i, j], p2[i, j]);
                 }
             }
-        } //trop foncé, faut réussir à plus faire ressortir les contours... comment ???
+        }
 
         /// <summary>
         /// Applique l'effet de contour des bords de MDIF à l'image
         /// </summary>
-        public void MDIF()
+        /// <param name="couleur"> booléen permettant de déterminer s'il faut rajouter un filtre Noir et Blanc à l'image </param>
+        public void MDIF(bool couleur = false)
         {
-            Black_White();
+            if (couleur)
+            {
+                Black_White();
+            }
             double[,] detectionHorizontale ={
                 {  0.0, -1.0, -1.0, -1.0,  0.0 },
                 { -1.0, -2.0, -3.0, -2.0, -1.0 },
                 {  0.0,  0.0,  0.0,  0.0,  0.0 },
                 {  1.0,  2.0,  3.0,  2.0,  1.0 },
-                {  0.0,  1.0,  1.0,  1.0,  1.0 } };
+                {  0.0,  1.0,  1.0,  1.0,  1.0 } 
+            };
 
             double[,] detectionVerticale ={
                 {  0.0, -1.0,  0.0,  1.0,  0.0 },
                 { -1.0, -2.0,  0.0,  2.0,  1.0 },
                 { -1.0, -3.0,  0.0,  3.0,  1.0 },
                 { -1.0, -2.0,  0.0,  2.0,  1.0 },
-                {  0.0, -1.0,  0.0,  1.0,  0.0 } };
+                {  0.0, -1.0,  0.0,  1.0,  0.0 } 
+            };
 
             double factor = 1.0 / 12.0;
             double bias = 0.0;
 
             Pixel[,] p1 = Convolution(detectionHorizontale, factor, bias);
             Pixel[,] p2 = Convolution(detectionVerticale, factor, bias);
+            this.hauteur = p1.GetLength(0);
+            this.largeur = p1.GetLength(1);
+            this.tailleFichier = (bitsCouleur * hauteur * largeur / 8) + tailleOffset;
+
+            this.image = p1;
             for (int i = 0; i < p1.GetLength(0); i++)
             {
                 for (int j = 0; j < p1.GetLength(1); j++)
@@ -696,12 +773,16 @@ namespace PixelPro
             double[,] filter ={
                 {  0.0,  -1.0,  0.0 },
                 { -1.0,   5.0, -1.0 },
-                {  0.0,  -1.0,  0.0 }};
+                {  0.0,  -1.0,  0.0 }
+            };
 
 
             double factor = 1.0;
             double bias = 0.0;
             this.image = Convolution(filter, factor, bias);
+            this.hauteur = image.GetLength(0);
+            this.largeur = image.GetLength(1);
+            this.tailleFichier = (bitsCouleur * hauteur * largeur / 8) + tailleOffset;
         }
 
         /// <summary>
@@ -712,12 +793,16 @@ namespace PixelPro
             double[,] filter ={
                 { -1.0,  -1.0,  0.0 },
                 { -1.0,   0.0,  1.0 },
-                {  0.0,   1.0,  1.0 }};
+                {  0.0,   1.0,  1.0 }
+            };
 
 
             double factor = 1.0;
             double bias = 128.0;
             this.image = Convolution(filter, factor, bias);
+            this.hauteur = image.GetLength(0);
+            this.largeur = image.GetLength(1);
+            this.tailleFichier = (bitsCouleur * hauteur * largeur / 8) + tailleOffset;
         }
 
         /// <summary>
